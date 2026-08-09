@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>بطاقة أعمال رقمية</title>
+  <!-- Font Awesome (CDN) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- QRCode.js (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <style>
+    /* ===== RESET & BASE ===== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(145deg, #f8faff 0%, #eef2f7 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1.5rem;
+      direction: rtl;
+    }
+
+    /* ===== CARD ===== */
+    .card {
+      max-width: 480px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 48px 48px 36px 36px;
+      padding: 2.2rem 1.8rem 1.8rem;
+      box-shadow: 0 30px 60px -20px rgba(0, 20, 40, 0.25),
+                  0 10px 25px -8px rgba(0,0,0,0.05);
+      border: 1px solid rgba(255,255,255,0.4);
+      transition: all 0.3s ease;
+      animation: cardFadeIn 0.8s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
+    }
+
+    @keyframes cardFadeIn {
+      0% { opacity: 0; transform: translateY(30px) scale(0.96); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* ===== PROFILE ===== */
+    .profile {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 1.6rem;
+    }
+
+    .avatar-wrapper {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      padding: 4px;
+      margin-bottom: 1rem;
+      box-shadow: 0 12px 28px -8px rgba(59, 130, 246, 0.25);
+      transition: transform 0.3s ease;
+    }
+
+    .avatar-wrapper:hover {
+      transform: scale(1.02);
+    }
+
+    .avatar {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #fff;
+      display: block;
+      border: 3px solid white;
+    }
+
+    .profile h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #0b1a33;
+      letter-spacing: -0.3px;
+      margin-bottom: 0.2rem;
+    }
+
+    .profile .bio {
+      font-size: 1rem;
+      font-weight: 400;
+      color: #4b5a74;
+      background: rgba(255,255,255,0.6);
+      padding: 0.4rem 1.2rem;
+      border-radius: 40px;
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255,255,255,0.5);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+      margin-top: 0.2rem;
+    }
+
+    /* ===== SOCIAL BUTTONS ===== */
+    .links-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      margin: 1.8rem 0 1.4rem;
+    }
+
+    .btn-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      padding: 0.9rem 1.2rem;
+      border-radius: 60px;
+      font-size: 1.2rem;
+      font-weight: 600;
+      text-decoration: none;
+      color: white;
+      background: #1e293b;
+      border: none;
+      transition: all 0.2s cubic-bezier(0.2, 0.9, 0.3, 1);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.04);
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .btn-link i {
+      width: 1.8rem;
+      font-size: 1.6rem;
+      text-align: center;
+    }
+
+    .btn-link span {
+      flex: 1;
+      text-align: center;
+    }
+
+    /* individual brand colors */
+    .btn-facebook { background: #1877f2; }
+    .btn-whatsapp { background: #25d366; }
+    .btn-instagram { background: radial-gradient(circle at 30% 110%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285aeb 90%); }
+    .btn-telegram { background: #0088cc; }
+
+    /* hover & press */
+    .btn-link:hover {
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 0 16px 32px -8px rgba(0,0,0,0.18);
+    }
+    .btn-link:active {
+      transform: scale(0.96);
+      transition-duration: 0.08s;
+    }
+
+    /* ===== SHARE & QR ===== */
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.8rem;
+      margin: 1.6rem 0 1rem;
+      padding-top: 0.8rem;
+      border-top: 1.5px dashed rgba(0,0,0,0.08);
+    }
+
+    .btn-share {
+      background: transparent;
+      border: 1.5px solid #1e293b;
+      color: #1e293b;
+      padding: 0.6rem 1.5rem;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: 0.2s;
+      cursor: pointer;
+      background: white;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    }
+
+    .btn-share:hover {
+      background: #1e293b;
+      color: white;
+      border-color: #1e293b;
+      box-shadow: 0 8px 16px -8px rgba(0,0,0,0.12);
+      transform: translateY(-2px);
+    }
+
+    .qr-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .qr-container {
+      background: white;
+      padding: 0.4rem;
+      border-radius: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+      line-height: 0;
+      width: 84px;
+      height: 84px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .qr-container img,
+    .qr-container canvas {
+      width: 100% !important;
+      height: 100% !important;
+      display: block;
+      border-radius: 12px;
+    }
+
+    .qr-label {
+      font-size: 0.75rem;
+      color: #4b5a74;
+      writing-mode: vertical-rl;
+      letter-spacing: 0.5px;
+      font-weight: 500;
+      opacity: 0.7;
+    }
+
+    /* ===== FOOTER ===== */
+    .footer {
+      margin-top: 1.5rem;
+      text-align: center;
+      font-size: 0.75rem;
+      color: #8896ab;
+      border-top: 1px solid rgba(0,0,0,0.04);
+      padding-top: 1.2rem;
+      letter-spacing: 0.3px;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 480px) {
+      .card { padding: 1.8rem 1.2rem; }
+      .avatar-wrapper { width: 100px; height: 100px; }
+      .profile h1 { font-size: 1.8rem; }
+      .btn-link { font-size: 1rem; padding: 0.8rem 0.8rem; }
+      .btn-link i { font-size: 1.4rem; width: 1.6rem; }
+      .actions { flex-direction: column; align-items: stretch; }
+      .qr-wrapper { justify-content: center; }
+      .qr-container { width: 72px; height: 72px; }
+    }
+
+    @media (max-width: 380px) {
+      .card { padding: 1.2rem 0.8rem; }
+      .profile h1 { font-size: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="card" role="main">
+
+    <!-- ===== PROFILE ===== -->
+    <div class="profile">
+      <div class="avatar-wrapper">
+        <img class="avatar" id="profileImage" src="https://scontent-hbe1-2.xx.fbcdn.net/v/t39.30808-6/497603953_24253612954222359_7106230860444870233_n.jpg?stp=dst-jpg_tt6&cstp=mx960x947&ctp=s960x947&_nc_cat=107&ccb=1-7&_nc_sid=a5f93a&_nc_eui2=AeHUrIMFoKxDlR4JB_ggu2_Z3rnnjbOHnGDeueeNs4ecYHXHfC9PfXFdoQzrnwWro1u6jSlHcmhP_gPUwvaaYXvj&_nc_ohc=kFz6_sxOSckQ7kNvwHjPvy1&_nc_oc=Adq1f-wDfb7tT5wl9roY8--RRu55LJuxNfwKl9ImVNbzCqWyQajThYR2U9wBzMbqUEs&_nc_zt=23&_nc_ht=scontent-hbe1-2.xx&_nc_gid=tPNI0C3wjzBTtQ2YaYh4IA&_nc_ss=7b2a8&oh=00_AQG2NtzyKe44aw2fq4w7FI-rty5KtsIqSMcIDkNiW8uCGw&oe=6A7E471D" alt="صورة شخصية">
+      </div>
+      <h1 id="profileName">بيشوي لطيف</h1>
+      <div class="bio" id="profileBio">Photographer سابق لدي مصور فوتوغرافي Photography</div>
+    </div>
+
+    <!-- ===== SOCIAL BUTTONS ===== -->
+    <div class="links-grid">
+      <a href="https://www.facebook.com/bishoDoo" target="_blank" rel="noopener noreferrer" class="btn-link btn-facebook" id="fbBtn">
+        <i class="fab fa-facebook-f"></i>
+        <span>فيسبوك</span>
+      </a>
+      <a href="https://wa.me/bishoolatif" target="_blank" rel="noopener noreferrer" class="btn-link btn-whatsapp" id="waBtn">
+        <i class="fab fa-whatsapp"></i>
+        <span>واتساب</span>
+      </a>
+      <a href="https://www.instagram.com/mr.tailor_bosha" target="_blank" rel="noopener noreferrer" class="btn-link btn-instagram" id="igBtn">
+        <i class="fab fa-instagram"></i>
+        <span>إنستغرام</span>
+      </a>
+      <a href="#" target="_blank" rel="noopener noreferrer" class="btn-link btn-telegram" id="tgBtn">
+        <i class="fab fa-telegram-plane"></i>
+        <span>تيليجرام</span>
+      </a>
+    </div>
+
+    <!-- ===== SHARE & QR ===== -->
+    <div class="actions">
+      <button class="btn-share" id="shareBtn">
+        <i class="fas fa-share-alt"></i> شارك صفحتي
+      </button>
+      <div class="qr-wrapper">
+        <span class="qr-label">QR</span>
+        <div class="qr-container" id="qrContainer"></div>
+      </div>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <div class="footer">
+      <i class="fas fa-qrcode" style="margin-left: 0.3rem;"></i> Portfolo by Bishoy Latif
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      'use strict';
+
+      // ============================================================
+      //  🟢 🟢 🟢  منطقة التعديل السريع  🟢 🟢 🟢
+      // ============================================================
+
+      // 1. بيانات الملف الشخصي
+      const profile = {
+        name: "بيشوي لطيف",
+        bio: "Photographer سابق لدي مصور فوتوغرافي Photography",
+        // يمكنك تغيير الصورة بأي رابط مباشر (يفضل مربع)
+        image: "https://scontent-hbe1-2.xx.fbcdn.net/v/t39.30808-6/497603953_24253612954222359_7106230860444870233_n.jpg?stp=dst-jpg_tt6&cstp=mx960x947&ctp=s960x947&_nc_cat=107&ccb=1-7&_nc_sid=a5f93a&_nc_eui2=AeHUrIMFoKxDlR4JB_ggu2_Z3rnnjbOHnGDeueeNs4ecYHXHfC9PfXFdoQzrnwWro1u6jSlHcmhP_gPUwvaaYXvj&_nc_ohc=kFz6_sxOSckQ7kNvwHjPvy1&_nc_oc=Adq1f-wDfb7tT5wl9roY8--RRu55LJuxNfwKl9ImVNbzCqWyQajThYR2U9wBzMbqUEs&_nc_zt=23&_nc_ht=scontent-hbe1-2.xx&_nc_gid=tPNI0C3wjzBTtQ2YaYh4IA&_nc_ss=7b2a8&oh=00_AQG2NtzyKe44aw2fq4w7FI-rty5KtsIqSMcIDkNiW8uCGw&oe=6A7E471D"
+      };
+
+      // 2. روابط التواصل (عدّل القيم فقط)
+      const links = {
+        facebook: "https://www.facebook.com/bishoDoo",
+        whatsapp: "https://wa.me/bishoolatif",
+        instagram: "https://www.instagram.com/mr.tailor_bosha", // رابط إنستغرام
+        telegram: "https://t.me/yourusername"              // رابط تليجرام
+      };
+
+
+      // تحديث واجهة الملف الشخصي
+      document.getElementById('profileName').textContent = profile.name;
+      document.getElementById('profileBio').textContent = profile.bio;
+      document.getElementById('profileImage').src = profile.image;
+
+      // دالة مساعدة لإنشاء رابط واتساب
+      function getWhatsAppLink(phone) {
+        // إزالة أي أحرف غير رقمية
+        const clean = String(phone).replace(/\D/g, '');
+        if (!clean) return '#';
+        return `https://wa.me/${clean}`;
+      }
+
+      // تعيين الروابط على الأزرار
+      const fbBtn = document.getElementById('fbBtn');
+      const waBtn = document.getElementById('waBtn');
+      const igBtn = document.getElementById('igBtn');
+      const tgBtn = document.getElementById('tgBtn');
+
+      fbBtn.href = links.facebook || '#';
+      waBtn.href = getWhatsAppLink(links.whatsapp);
+      igBtn.href = links.instagram || '#';
+      tgBtn.href = links.telegram || '#';
+
+      // حماية: إذا كان الرابط '#', نمنع الانتقال الافتراضي (لأنه قد يكون غير معدل)
+      [fbBtn, waBtn, igBtn, tgBtn].forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          if (this.href === '#' || this.href === window.location.href + '#') {
+            e.preventDefault();
+            alert('الرجاء تعيين الرابط في قسم "links" داخل JavaScript.');
+          }
+        });
+      });
+
+      // ===== زر المشاركة (Web Share API + نسخ) =====
+      const shareBtn = document.getElementById('shareBtn');
+
+      shareBtn.addEventListener('click', async function() {
+        const shareData = {
+          title: document.title,
+          text: `بطاقة ${profile.name} · ${profile.bio}`,
+          url: window.location.href
+        };
+
+        if (navigator.share && /mobile|android|iphone|ipad/i.test(navigator.userAgent)) {
+          try {
+            await navigator.share(shareData);
+            return;
+          } catch (err) {
+            if (err.name !== 'AbortError') console.warn('Web Share فشل:', err);
+            // في حال الإلغاء لا نفعل شيئاً
+          }
+        }
+
+        // Web Share غير مدعوم أو فشل → عرض الرابط مع زر نسخ
+        const userConfirmed = confirm(
+          `مشاركة الرابط:\n${window.location.href}\n\nاضغط "موافق" لنسخ الرابط، أو "إلغاء" للإلغاء.`
+        );
+        if (userConfirmed) {
+          try {
+            await navigator.clipboard.writeText(window.location.href);
+            alert('✅ تم نسخ الرابط إلى الحافظة!');
+          } catch (clipError) {
+            // Fallback يدوي
+            const textarea = document.createElement('textarea');
+            textarea.value = window.location.href;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            alert('✅ تم نسخ الرابط (طريقة احتياطية)');
+          }
+        }
+      });
+
+      // ===== توليد QR Code =====
+      const qrContainer = document.getElementById('qrContainer');
+
+      // وظيفة توليد الـ QR (نستدعيها بعد التأكد من وجود المكتبة)
+      function generateQR() {
+        // إذا كانت المكتبة محملة
+        if (typeof QRCode === 'function') {
+          // إزالة أي محتوى سابق (canvas أو img)
+          qrContainer.innerHTML = '';
+          new QRCode(qrContainer, {
+            text: window.location.href,
+            width: 84,
+            height: 84,
+            colorDark: '#0b1a33',
+            colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.H
+          });
+        } else {
+          // في حال لم يتم تحميل المكتبة (نادر)
+          qrContainer.innerHTML = '<span style="font-size:10px;color:#999;">QR</span>';
+        }
+      }
+
+      // ننتظر تحميل المكتبة (QRCode.js)
+      if (document.readyState === 'complete') {
+        generateQR();
+      } else {
+        window.addEventListener('load', function() {
+          // نعطي مهلة صغيرة للتأكد
+          setTimeout(generateQR, 200);
+        });
+      }
+
+      // عند تغيير الرابط (أو إعادة التوليد) يمكن استدعاء generateQR() مجدداً
+      // لكن في حالتنا الرابط ثابت (window.location.href)
+
+      // زر إعادة توليد QR (ليس مطلوباً لكن نضيفه بشكل خفي عند الضغط على الـ QR)
+      // اختياري: إعادة توليد إذا ضغط المستخدم على الـ QR (لتحديث)
+      qrContainer.addEventListener('dblclick', function() {
+        generateQR();
+      });
+
+      // نضيف دالة لتحديث واتساب في حال تغيير الرقم ديناميكياً (ليس ضرورياً)
+      // لكن نعرضها كمرونة: يمكن للمطور استدعاء updateWhatsAppLink(newNumber)
+      window.updateWhatsAppLink = function(newNumber) {
+        links.whatsapp = newNumber;
+        waBtn.href = getWhatsAppLink(newNumber);
+      };
+
+      // تحديث الروابط إذا تم تغييرها من الكونسول (للمطور)
+      console.log('✅ بطاقة الأعمال جاهزة! عدّل المتغيرات (profile, links) في أعلى script.');
+      console.log('📌 لتحديث رابط واتساب استخدم: updateWhatsAppLink("رقم")');
+      console.log('📌 QR Code يعكس رابط الصفحة الحالية تلقائياً.');
+
+    })();
+  </script>
+</body>
+</html>
