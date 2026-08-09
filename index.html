@@ -273,15 +273,15 @@
 
     <!-- ===== SOCIAL BUTTONS ===== -->
     <div class="links-grid">
-      <a href="https://www.facebook.com/bishoDoo" target="_blank" rel="noopener noreferrer" class="btn-link btn-facebook" id="fbBtn">
+      <a href="#" target="_blank" rel="noopener noreferrer" class="btn-link btn-facebook" id="fbBtn">
         <i class="fab fa-facebook-f"></i>
         <span>فيسبوك</span>
       </a>
-      <a href="https://wa.me/bishoolatif" target="_blank" rel="noopener noreferrer" class="btn-link btn-whatsapp" id="waBtn">
+      <a href="#" target="_blank" rel="noopener noreferrer" class="btn-link btn-whatsapp" id="waBtn">
         <i class="fab fa-whatsapp"></i>
         <span>واتساب</span>
       </a>
-      <a href="https://www.instagram.com/mr.tailor_bosha" target="_blank" rel="noopener noreferrer" class="btn-link btn-instagram" id="igBtn">
+      <a href="#" target="_blank" rel="noopener noreferrer" class="btn-link btn-instagram" id="igBtn">
         <i class="fab fa-instagram"></i>
         <span>إنستغرام</span>
       </a>
@@ -320,30 +320,47 @@
       const profile = {
         name: "بيشوي لطيف",
         bio: "Photographer سابق لدي مصور فوتوغرافي Photography",
-        // يمكنك تغيير الصورة بأي رابط مباشر (يفضل مربع)
         image: "https://scontent-hbe1-2.xx.fbcdn.net/v/t39.30808-6/497603953_24253612954222359_7106230860444870233_n.jpg?stp=dst-jpg_tt6&cstp=mx960x947&ctp=s960x947&_nc_cat=107&ccb=1-7&_nc_sid=a5f93a&_nc_eui2=AeHUrIMFoKxDlR4JB_ggu2_Z3rnnjbOHnGDeueeNs4ecYHXHfC9PfXFdoQzrnwWro1u6jSlHcmhP_gPUwvaaYXvj&_nc_ohc=kFz6_sxOSckQ7kNvwHjPvy1&_nc_oc=Adq1f-wDfb7tT5wl9roY8--RRu55LJuxNfwKl9ImVNbzCqWyQajThYR2U9wBzMbqUEs&_nc_zt=23&_nc_ht=scontent-hbe1-2.xx&_nc_gid=tPNI0C3wjzBTtQ2YaYh4IA&_nc_ss=7b2a8&oh=00_AQG2NtzyKe44aw2fq4w7FI-rty5KtsIqSMcIDkNiW8uCGw&oe=6A7E471D"
       };
 
       // 2. روابط التواصل (عدّل القيم فقط)
       const links = {
         facebook: "https://www.facebook.com/bishoDoo",
-        whatsapp: "https://wa.me/bishoolatif",
-        instagram: "https://www.instagram.com/mr.tailor_bosha", // رابط إنستغرام
-        telegram: "https://t.me/yourusername"              // رابط تليجرام
+        whatsapp: "bishoolatif",   // 👈 حط هنا bishoolatif أو أي نص تاني
+        instagram: "https://www.instagram.com/mr.tailor_bosha",
+        telegram: "https://t.me/yourusername"
       };
 
+      // ============================================================
+      //  🔧  الكود التلقائي — لا تعدّل ما لم تفهم ما تفعل  🔧
+      // ============================================================
 
       // تحديث واجهة الملف الشخصي
       document.getElementById('profileName').textContent = profile.name;
       document.getElementById('profileBio').textContent = profile.bio;
       document.getElementById('profileImage').src = profile.image;
 
-      // دالة مساعدة لإنشاء رابط واتساب
-      function getWhatsAppLink(phone) {
-        // إزالة أي أحرف غير رقمية
-        const clean = String(phone).replace(/\D/g, '');
-        if (!clean) return '#';
-        return `https://wa.me/${clean}`;
+      // دالة مساعدة لإنشاء رابط واتساب - تدعم النصوص والروابط
+      function getWhatsAppLink(input) {
+        if (!input) return '#';
+        
+        // لو الرابط كامل من wa.me
+        if (input.includes('wa.me') || input.includes('whatsapp.com')) {
+          return input;
+        }
+        
+        // لو بيبدأ بـ + (رقم دولي)
+        if (input.startsWith('+')) {
+          return `https://wa.me/${input}`;
+        }
+        
+        // لو بيبدأ بصفر (رقم محلي)
+        if (input.startsWith('0')) {
+          return `https://wa.me/${input.substring(1)}`;
+        }
+        
+        // غير كده اعتبره نص (يوزر أو اسم)
+        return `https://wa.me/${input}`;
       }
 
       // تعيين الروابط على الأزرار
@@ -357,7 +374,7 @@
       igBtn.href = links.instagram || '#';
       tgBtn.href = links.telegram || '#';
 
-      // حماية: إذا كان الرابط '#', نمنع الانتقال الافتراضي (لأنه قد يكون غير معدل)
+      // حماية: إذا كان الرابط '#', نمنع الانتقال الافتراضي
       [fbBtn, waBtn, igBtn, tgBtn].forEach(btn => {
         btn.addEventListener('click', function(e) {
           if (this.href === '#' || this.href === window.location.href + '#') {
@@ -383,11 +400,9 @@
             return;
           } catch (err) {
             if (err.name !== 'AbortError') console.warn('Web Share فشل:', err);
-            // في حال الإلغاء لا نفعل شيئاً
           }
         }
 
-        // Web Share غير مدعوم أو فشل → عرض الرابط مع زر نسخ
         const userConfirmed = confirm(
           `مشاركة الرابط:\n${window.location.href}\n\nاضغط "موافق" لنسخ الرابط، أو "إلغاء" للإلغاء.`
         );
@@ -396,7 +411,6 @@
             await navigator.clipboard.writeText(window.location.href);
             alert('✅ تم نسخ الرابط إلى الحافظة!');
           } catch (clipError) {
-            // Fallback يدوي
             const textarea = document.createElement('textarea');
             textarea.value = window.location.href;
             document.body.appendChild(textarea);
@@ -411,11 +425,8 @@
       // ===== توليد QR Code =====
       const qrContainer = document.getElementById('qrContainer');
 
-      // وظيفة توليد الـ QR (نستدعيها بعد التأكد من وجود المكتبة)
       function generateQR() {
-        // إذا كانت المكتبة محملة
         if (typeof QRCode === 'function') {
-          // إزالة أي محتوى سابق (canvas أو img)
           qrContainer.innerHTML = '';
           new QRCode(qrContainer, {
             text: window.location.href,
@@ -426,40 +437,30 @@
             correctLevel: QRCode.CorrectLevel.H
           });
         } else {
-          // في حال لم يتم تحميل المكتبة (نادر)
           qrContainer.innerHTML = '<span style="font-size:10px;color:#999;">QR</span>';
         }
       }
 
-      // ننتظر تحميل المكتبة (QRCode.js)
       if (document.readyState === 'complete') {
         generateQR();
       } else {
         window.addEventListener('load', function() {
-          // نعطي مهلة صغيرة للتأكد
           setTimeout(generateQR, 200);
         });
       }
 
-      // عند تغيير الرابط (أو إعادة التوليد) يمكن استدعاء generateQR() مجدداً
-      // لكن في حالتنا الرابط ثابت (window.location.href)
-
-      // زر إعادة توليد QR (ليس مطلوباً لكن نضيفه بشكل خفي عند الضغط على الـ QR)
-      // اختياري: إعادة توليد إذا ضغط المستخدم على الـ QR (لتحديث)
       qrContainer.addEventListener('dblclick', function() {
         generateQR();
       });
 
-      // نضيف دالة لتحديث واتساب في حال تغيير الرقم ديناميكياً (ليس ضرورياً)
-      // لكن نعرضها كمرونة: يمكن للمطور استدعاء updateWhatsAppLink(newNumber)
-      window.updateWhatsAppLink = function(newNumber) {
-        links.whatsapp = newNumber;
-        waBtn.href = getWhatsAppLink(newNumber);
+      // دالة لتحديث رابط واتساب ديناميكياً
+      window.updateWhatsAppLink = function(newValue) {
+        links.whatsapp = newValue;
+        waBtn.href = getWhatsAppLink(newValue);
       };
 
-      // تحديث الروابط إذا تم تغييرها من الكونسول (للمطور)
-      console.log('✅ بطاقة الأعمال جاهزة! عدّل المتغيرات (profile, links) في أعلى script.');
-      console.log('📌 لتحديث رابط واتساب استخدم: updateWhatsAppLink("رقم")');
+      console.log('✅ بطاقة الأعمال جاهزة!');
+      console.log('📌 لتحديث رابط واتساب استخدم: updateWhatsAppLink("bishoolatif")');
       console.log('📌 QR Code يعكس رابط الصفحة الحالية تلقائياً.');
 
     })();
